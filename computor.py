@@ -69,19 +69,21 @@ if len(sys.argv) == 2 :
                 if power > degree :
                     degree = power;
             i = 0;
-            # removing contradicting values without scalars 
-            while i <= power :
-                var = "X^" + str(i)
-                if "-" + var in form :
-                    if "+" + var in form :
-                        form = form.replace("-" + var, ''); 
-                        form = form.replace("+" + var, '');
-                i += 1;
+            # removing contradicting values without scalars
+            for elem in form :
+                while i <= power :
+                    var = "X^" + str(i)
+                    if "-" + var in form :
+                        if "+" + var in form :
+                            form = form.replace("-" + var, '', 1); 
+                            form = form.replace("+" + var, '', 1);
+                    i += 1;
             form = form.replace("X^", "K");
-            if "-X" in form :
-                if "+X" in form :
-                    form = form.replace("-X", ''); 
-                    form = form.replace("+X", ''); 
+            for i in form:
+                if "-X" in form :
+                    if "+X" in form :
+                        form = form.replace("-X", '', 1); 
+                        form = form.replace("+X", '', 1); 
             
             form = form.replace("K", "X^");
             form =  form.replace("X^1", 'X');
@@ -127,8 +129,11 @@ if len(sys.argv) == 2 :
             while j < len(setOfElems) :
                 elem = setOfElems[j].split("*");
                 if len(elem) > 1 and setofDup[j] != 0:
-                    setofDup[j] = setofDup[j] * float(elem[0]) if setofDup[j] != 1 else float(elem[0]);
-                    setOfElems[j] = elem[1];
+                    for i in elem :
+                        if "X" in i :
+                            setOfElems[j] = i;
+                        else :
+                            setofDup[j] = setofDup[j] * float(i) if setofDup[j] != 1 else float(i);
                 j += 1;
             i = 0;
             while i < len(setOfElems):
@@ -176,12 +181,12 @@ if len(sys.argv) == 2 :
             # creating final reduced form
             form = "";
             i = 0;
-            while i < len(xElems) :
+            while i < len(xElems):
                 if xDups[i] != 0 :
                     form += " " + ("+ " if xDups[i] > 0  and i != 0 else "") + (str(xDups[i]) + " * " if xDups[i] != 1 else "") + xElems[i];
                 i += 1;
             if nXElem != 0 :
-                form += " " + str(nXElem) if nXElem < 0 else " + " + str(nXElem);
+                form += " " + str(nXElem) if nXElem < 0 or len(xElems) == 0 else " + " + str(nXElem);
         else:
             valid = 0;
 
