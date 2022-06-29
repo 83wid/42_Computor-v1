@@ -55,11 +55,8 @@ if len(sys.argv) == 2 :
             form = inb;
             # arranging the equation on one side
             equetion = inb.split( "=");
-            equetion[0] = equetion[0].strip();
-            equetion[1] = equetion[1].strip();
             xposLeft = [i.start() for i in re.finditer("X", equetion[0])];
             xposRight = [i.start() for i in re.finditer("X", equetion[1])];
-
             if equetion[1] != "0" :
                 equetion[1] = "+" + equetion[1] if equetion[1][0] != '-' else equetion[1];
                 equetion[1] = equetion[1].replace("^-", '^p');
@@ -69,9 +66,10 @@ if len(sys.argv) == 2 :
                 equetion[1] = equetion[1].replace("k", '+');
                 equetion[1] = equetion[1].replace("^p", '^-');
                 equetion[1] = equetion[1].replace("^j", '^+');
-                form = "+" + equetion[0] +  equetion[1];
+                form = equetion[0] + equetion[1] if equetion[0][0] == '-' else "+" + equetion[0] + equetion[1][1:];
             else :
-                form = "+" + equetion[0];
+                form = "+" + equetion[0] if equetion[0][0] != '-' else equetion[0];
+
             form = re.sub('\s+', '', form);
             powers = list();
             xpos = [i.start() for i in re.finditer("X\^", form)];
@@ -83,12 +81,12 @@ if len(sys.argv) == 2 :
             i = 0;
 
             # removing contradicting values without scalars
-            form = form + " ";    
+            form = form + " ";
             form =  form.replace("X^1-", 'X-');
             form =  form.replace("X^1+", 'X+');
-            form =  form.replace("X^1 ", 'X ');            
+            form =  form.replace("X^1 ", 'X ');
             for elem in form :
-                while i in powers :
+                for i in powers :
                     var = "X^" + str(i);
                     while "+" + var in form and "-" + var in form :
                         form = form.replace("-" + var, '', 1); 
@@ -125,7 +123,7 @@ if len(sys.argv) == 2 :
                     while el < len(sump):
                         elem = sump[el];
                         if elem in setOfElems:
-                            setofDup[setOfElems.index(elem)] += 1 if setSign[setOfElems.index(elem)] == 1 else -1;
+                            setofDup[setOfElems.index(elem)] += 1 if el > 0 and setSign[setOfElems.index(elem)] == 1  or el == 0 and setSign[setOfElems.index(elem)] == -1 else -1;
                         elif elem != "":
                             setOfElems.append(elem)
                             setofDup.append(1);
@@ -219,6 +217,7 @@ if len(sys.argv) == 2 :
                 lowPower = power;
             if power > degree :
                 degree = power;
+                
         # print statements
         if lowPower < 0 :
             print ("Reduced form:", form + " = 0");
