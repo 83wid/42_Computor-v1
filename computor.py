@@ -1,5 +1,14 @@
 #!/usr/bin/python3
 
+def myAtoi(string):
+    res = 0
+    for i in string:
+        if type(i) != int:
+            return res
+        res = res * 10 + int(string[i]);
+  
+    return res
+
 def myAbs(num) :
     return -num if num < 0 else num;
 
@@ -26,6 +35,7 @@ def sqrt(n) :
  
     return root
  
+
 
 import sys
 import re
@@ -65,29 +75,28 @@ if len(sys.argv) == 2 :
             form = re.sub('\s+', '', form);
             xpos = [i.start() for i in re.finditer("X\^", form)];
             for i in xpos :
-                power = int(form[i + 2:i + 3]);
+                power = myAtoi(form[i + 2:]);
                 if power > degree :
                     degree = power;
             i = 0;
             # removing contradicting values without scalars
+            form = form + " ";    
+            form =  form.replace("X^1-", 'X-');
+            form =  form.replace("X^1+", 'X+');
+            form =  form.replace("X^1 ", 'X ');
             for elem in form :
                 while i <= power :
-                    var = "X^" + str(i)
-                    if "-" + var in form :
-                        if "+" + var in form :
-                            form = form.replace("-" + var, '', 1); 
-                            form = form.replace("+" + var, '', 1);
+                    var = "X^" + str(i);
+                    while "+" + var in form and "-" + var in form :
+                        form = form.replace("-" + var, '', 1); 
+                        form = form.replace("+" + var, '', 1);
                     i += 1;
             form = form.replace("X^", "K");
-            for i in form:
-                if "-X" in form :
-                    if "+X" in form :
-                        form = form.replace("-X", '', 1); 
-                        form = form.replace("+X", '', 1); 
-            
+            while "-X" in form and "+X" in form :
+                form = form.replace("-X", '', 1); 
+                form = form.replace("+X", '', 1); 
             form = form.replace("K", "X^");
-            form =  form.replace("X^1", 'X');
-
+            form = re.sub('\s+', '', form);
             #protecting  power sign before spliting
             form = form.replace("^-", '^p');
             form.replace("-", "-1*");
@@ -176,8 +185,7 @@ if len(sys.argv) == 2 :
                     b = xDups[xElems.index(elem)];
 
             delta = b * b - 4 * a * c;
-
-
+            
             # creating final reduced form
             form = "";
             i = 0;
@@ -204,7 +212,7 @@ if len(sys.argv) == 2 :
         form = re.sub('\s+', ' ', form);
         xpos = [i.start() for i in re.finditer("X\^", form)];
         for i in xpos :
-            power = int(form[i + 2:i + 4]);
+            power = myAtoi(form[i + 2:]);
             if power < 0 :
                 lowPower = power;
             if power > degree :
@@ -231,8 +239,9 @@ if len(sys.argv) == 2 :
         if degree < 3 and a == 0 :
             print ("Reduced form:", form + " = 0");
             print ("Polynomial degree:", degree);
+            print("Discriminant value is:", delta);
             print ("The solution is:")
-            print("{:.6f}".format(-c / b));
+            print("{- c / b}: ", "{:.6f}".format(-c / b));
             exit(0);
 
         print ("Reduced form:", form + " = 0");
@@ -240,17 +249,20 @@ if len(sys.argv) == 2 :
         if degree > 2 :
             print("The polynomial degree is strictly greater than 2, I can't solve.");
         elif delta < 0:
+            print("Discriminant value is:", delta);
             print("Discriminant is strictly negative, the two complex solutions are:");
             val = myAbs(sqrt(-delta)/ (2 * a));
-            print(-b /( 2 * a), " + " if val >= 0 else " - ","{:.6f}".format(val), " * i");
-            print(-b /( 2 * a), " - " if val >= 0 else " + ","{:.6f}".format(val), " * i");
+            print("{(-b - abs(sqrt(delta))) / (2 * a)}: ", -b /( 2 * a), " + " if val >= 0 else " - ","{:.6f}".format(val), " * i");
+            print("{(-b + abs(sqrt(delta))) / (2 * a)}: ", -b /( 2 * a), " - " if val >= 0 else " + ","{:.6f}".format(val), " * i");
         elif delta > 0:
+            print("Discriminant value is:", delta);
             print("Discriminant is strictly positive, the two solutions are:");
-            print("{:.6f}".format((-b - sqrt(delta)) /( 2 * a)));
-            print("{:.6f}".format((-b + sqrt(delta)) /( 2 * a)));
+            print("{(-b - sqrt(delta)) / (2 * a)}: ", "{:.6f}".format((-b - sqrt(delta)) /( 2 * a)));
+            print("{(-b + sqrt(delta)) / (2 * a)}: ","{:.6f}".format((-b + sqrt(delta)) /( 2 * a)));
         elif delta == 0:
+            print("Discriminant value is:", delta);
             print("Discriminant is Zero, the solution is:");
-            print("{:.6f}".format(-b /( 2 * a)));
+            print("{-b  / (2 * a)}: ", "{:.6f}".format(-b /( 2 * a)));
 else : 
     print("Error");
     exit(0);
