@@ -3,10 +3,10 @@
 def myAtoi(string):
     res = 0
     for i in string:
-        if type(i) != int:
-            return res
-        res = res * 10 + int(string[i]);
-  
+        if ord(i) >= ord('0') and ord(i) <= ord('9'):
+            res = res * 10 + int(i) ;
+        else:
+            break;
     return res
 
 def myAbs(num) :
@@ -73,19 +73,22 @@ if len(sys.argv) == 2 :
             else :
                 form = "+" + equetion[0];
             form = re.sub('\s+', '', form);
+            powers = list();
             xpos = [i.start() for i in re.finditer("X\^", form)];
             for i in xpos :
                 power = myAtoi(form[i + 2:]);
+                powers.append(power);
                 if power > degree :
                     degree = power;
             i = 0;
+
             # removing contradicting values without scalars
             form = form + " ";    
             form =  form.replace("X^1-", 'X-');
             form =  form.replace("X^1+", 'X+');
-            form =  form.replace("X^1 ", 'X ');
+            form =  form.replace("X^1 ", 'X ');            
             for elem in form :
-                while i <= power :
+                while i in powers :
                     var = "X^" + str(i);
                     while "+" + var in form and "-" + var in form :
                         form = form.replace("-" + var, '', 1); 
@@ -209,7 +212,6 @@ if len(sys.argv) == 2 :
             exit(0);
         # calculating the actual degree of the equation
         degree = 1 if 'X' in form else 0;
-        form = re.sub('\s+', ' ', form);
         xpos = [i.start() for i in re.finditer("X\^", form)];
         for i in xpos :
             power = myAtoi(form[i + 2:]);
@@ -217,7 +219,6 @@ if len(sys.argv) == 2 :
                 lowPower = power;
             if power > degree :
                 degree = power;
-
         # print statements
         if lowPower < 0 :
             print ("Reduced form:", form + " = 0");
